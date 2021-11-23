@@ -1,6 +1,5 @@
 package ru.netology.repository;
 
-import org.springframework.stereotype.Repository;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
@@ -9,7 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
 public class PostRepositoryImpl implements PostRepository {
   private final int NOT_FOUND = -1;
   private final int NEW_POST = 0;
