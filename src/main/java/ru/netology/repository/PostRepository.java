@@ -3,49 +3,50 @@ package ru.netology.repository;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 // Stub
 public class PostRepository {
-  private final List<Post> posts = new ArrayList<>();
-  private long idCounter = 0;
+  private final int NOT_FOUND = -1;
+  private final int NEW_POST = 0;
+
+  private final List<Post> postsList = new CopyOnWriteArrayList<>();
+  private final AtomicLong idCounter = new AtomicLong(0);
 
   public List<Post> all() {
-    return posts;
+    return postsList;
   }
 
   public Optional<Post> getById(long id) {
-    return Optional.of(posts.get((int) id));
+    return Optional.of(postsList.get((int) id));
   }
 
-  public Post save(Post post) {
-    if (post.getId() == 0) {
-      post.setId(idCounter++);
-      posts.add(post);
+  public Post save(Post post) throws NotFoundException {
+    if (post.getId() == NEW_POST) {
+      post.setId(idCounter.incrementAndGet());
+      postsList.add(post);
     } else {
-      try {
-        int index = posts.indexOf(posts.get((int) post.getId()));
+      int index = postsList.indexOf(
+              postsList.stream()
+                      .filter(p -> p.getId() == post.getId())
+                      .findFirst()
+                      .orElseThrow(NotFoundException::new)
+      );
 
-        if (index == -1) throw new NotFoundException();
-
-        posts.set(index, post);
-      } catch (IndexOutOfBoundsException | NotFoundException e) {
-        throw new NotFoundException("There is no post with id: " + post.getId());
-      }
+      if (index == NOT_FOUND) throw new NotFoundException();
+      postsList.set(index, post);
     }
-
     return post;
   }
 
-  public void removeById(long id) {
-
-    System.out.println(posts.remove(posts.stream()
+  public boolean removeById(long id) throws NotFoundException {
+    return postsList.remove(postsList.stream()
             .filter(post -> post.getId() == id)
             .findFirst()
             .orElseThrow(NotFoundException::new)
-    ));
+    );
   }
 }
