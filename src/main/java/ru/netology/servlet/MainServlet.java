@@ -1,5 +1,6 @@
 package ru.netology.servlet;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.netology.controller.PostController;
 import ru.netology.exception.NotFoundException;
 import ru.netology.exception.UnsupportedMethodException;
@@ -24,15 +25,17 @@ public class MainServlet extends HttpServlet {
 
   @Override
   public void init() {
-    final PostRepository repository = new PostRepositoryImpl();
-    final var service = new PostService(repository);
-    controller = new PostController(service);
 
-    initRouterMap();
+      final var context = new AnnotationConfigApplicationContext("ru.netology");
+      final var repository = context.getBean(PostRepositoryImpl.class);
+      final var service = context.getBean(PostService.class);
+      controller = context.getBean(PostController.class);
+
+      initRouterMap();
   }
 
   public void initRouterMap() {
-      routerMap = new HashMap<>();
+    routerMap = new HashMap<>();
     routerMap.put("GET", new ArrayList<>(
             List.of(
                     new HandlerKeyPair(
