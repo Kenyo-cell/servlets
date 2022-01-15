@@ -3,8 +3,8 @@ package ru.netology.repository;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -14,30 +14,26 @@ public class PostRepository {
   private final int NEW_POST = 0;
 
   private final List<Post> postsList = new CopyOnWriteArrayList<>();
+  private final Map<Long, Post> posts = new ConcurrentHashMap<>();
   private final AtomicLong idCounter = new AtomicLong(0);
 
   public List<Post> all() {
-    return postsList;
+    return new ArrayList<>(posts.values());
   }
 
   public Optional<Post> getById(long id) {
-    return Optional.of(postsList.get((int) id));
+    return Optional.of(posts.get(id));
   }
 
   public Post save(Post post) throws NotFoundException {
     if (post.getId() == NEW_POST) {
       post.setId(idCounter.incrementAndGet());
-      postsList.add(post);
+      posts.put(post.getId(), post);
     } else {
-      int index = postsList.indexOf(
-              postsList.stream()
-                      .filter(p -> p.getId() == post.getId())
-                      .findFirst()
-                      .orElseThrow(NotFoundException::new)
-      );
+      if (posts.get(post.getId()) == null)
+        throw new NotFoundException("Post with id %d not found".formatted(post.getId()));
 
-      if (index == NOT_FOUND) throw new NotFoundException();
-      postsList.set(index, post);
+      posts.put(post.getId(), post);
     }
     return post;
   }

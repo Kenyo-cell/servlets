@@ -24,6 +24,7 @@ public class PostController {
     response.getWriter().print(gson.toJson(data));
   }
 
+  // TODO: rewrite response status code with 404 error
   public void getById(long id, HttpServletResponse response) throws IOException {
     response.setContentType(APPLICATION_JSON);
     final var data = service.getById(id);
