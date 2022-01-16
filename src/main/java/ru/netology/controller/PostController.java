@@ -24,12 +24,17 @@ public class PostController {
     response.getWriter().print(gson.toJson(data));
   }
 
-  // TODO: rewrite response status code with 404 error
   public void getById(long id, HttpServletResponse response) throws IOException {
-    response.setContentType(APPLICATION_JSON);
-    final var data = service.getById(id);
-    final var gson = new Gson();
-    response.getWriter().print(gson.toJson(data));
+    try {
+      response.setContentType(APPLICATION_JSON);
+      final var data = service.getById(id);
+      final var gson = new Gson();
+      response.getWriter().print(gson.toJson(data));
+    } catch (NotFoundException e) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      response.getWriter().print("{ \"errorMessage\" : \"%s\" }".formatted(e.getMessage()));
+    }
+
   }
 
   public void save(Reader body, HttpServletResponse response) throws IOException {
@@ -40,7 +45,8 @@ public class PostController {
       final var data = service.save(post);
       response.getWriter().print(gson.toJson(data));
     } catch (NotFoundException e) {
-      response.getWriter().print(e.getMessage());
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      response.getWriter().print("{ \"errorMessage\" : \"%s\" }".formatted(e.getMessage()));
     }
   }
 
@@ -49,7 +55,8 @@ public class PostController {
     try {
       response.getWriter().print("{\"success\" : \"%b\"}".formatted(service.removeById(id)));
     } catch (NotFoundException e) {
-      response.getWriter().print(e.getMessage());
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      response.getWriter().print("{ \"errorMessage\" : \"%s\" }".formatted(e.getMessage()));
     }
   }
 }
