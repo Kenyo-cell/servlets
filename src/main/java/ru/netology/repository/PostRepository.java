@@ -9,5 +9,5 @@ public interface PostRepository {
   public List<Post> all();
   public Optional<Post> getById(long id);
   public Post save(Post post);
-  public boolean removeById(long id);
+  public void removeById(long id);
 }

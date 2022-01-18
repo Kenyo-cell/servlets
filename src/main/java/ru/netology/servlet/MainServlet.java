@@ -11,6 +11,7 @@ import ru.netology.service.PostService;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +76,7 @@ public class MainServlet extends HttpServlet {
   }
 
   @Override
-  protected void service(HttpServletRequest req, HttpServletResponse res) {
+  protected void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
     // если деплоились в root context, то достаточно этого
     try {
       final var path = req.getRequestURI();
@@ -91,7 +92,9 @@ public class MainServlet extends HttpServlet {
               .handle(req, res);
 
     } catch (UnsupportedMethodException | NotFoundException e) {
-      res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        res.setContentType(PostController.APPLICATION_JSON);
+        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        res.getWriter().print("{ \"errorMessage\" : \"%s\" }".formatted(e.getMessage()));
     } catch (Exception e) {
       e.printStackTrace();
       res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

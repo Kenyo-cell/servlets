@@ -24,39 +24,23 @@ public class PostController {
     response.getWriter().print(gson.toJson(data));
   }
 
-  public void getById(long id, HttpServletResponse response) throws IOException {
-    try {
-      response.setContentType(APPLICATION_JSON);
-      final var data = service.getById(id);
-      final var gson = new Gson();
-      response.getWriter().print(gson.toJson(data));
-    } catch (NotFoundException e) {
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      response.getWriter().print("{ \"errorMessage\" : \"%s\" }".formatted(e.getMessage()));
-    }
-
+  public void getById(long id, HttpServletResponse response) throws IOException, NotFoundException {
+    response.setContentType(APPLICATION_JSON);
+    final var data = service.getById(id);
+    final var gson = new Gson();
+    response.getWriter().print(gson.toJson(data));
   }
 
-  public void save(Reader body, HttpServletResponse response) throws IOException {
+  public void save(Reader body, HttpServletResponse response) throws IOException, NotFoundException {
     response.setContentType(APPLICATION_JSON);
     final var gson = new Gson();
     final var post = gson.fromJson(body, Post.class);
-    try {
-      final var data = service.save(post);
-      response.getWriter().print(gson.toJson(data));
-    } catch (NotFoundException e) {
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      response.getWriter().print("{ \"errorMessage\" : \"%s\" }".formatted(e.getMessage()));
-    }
+    final var data = service.save(post);
+    response.getWriter().print(gson.toJson(data));
   }
 
-  public void removeById(long id, HttpServletResponse response) throws IOException {
-    response.setContentType(APPLICATION_JSON);
-    try {
-      response.getWriter().print("{\"success\" : \"%b\"}".formatted(service.removeById(id)));
-    } catch (NotFoundException e) {
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      response.getWriter().print("{ \"errorMessage\" : \"%s\" }".formatted(e.getMessage()));
-    }
+  public void removeById(long id, HttpServletResponse response) throws IOException, NotFoundException {
+    service.removeById(id);
+    response.setStatus(HttpServletResponse.SC_OK);
   }
 }
