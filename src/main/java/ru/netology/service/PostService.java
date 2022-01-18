@@ -18,27 +18,16 @@ public class PostService {
   }
 
   public Post getById(long id) throws NotFoundException {
-    try {
-      return repository.getById(id).orElseThrow(NotFoundException::new);
-    } catch (NotFoundException e) {
-      throw new NotFoundException("Post with id %d not found".formatted(id));
-    }
+      return repository.getById(id)
+              .orElseThrow(() -> new NotFoundException("Post with id %d not found".formatted(id)));
   }
 
   public Post save(Post post) throws NotFoundException {
-    try {
-      return repository.save(post);
-    } catch (NotFoundException e) {
-      throw new NotFoundException("Post with id %d not found".formatted(post.getId()));
-    }
+    return repository.save(post);
   }
 
   public boolean removeById(long id) throws NotFoundException {
-    try {
       return repository.removeById(id);
-    } catch (NotFoundException e) {
-      throw new NotFoundException("Post with id %d not found".formatted(id));
-    }
   }
 }
 

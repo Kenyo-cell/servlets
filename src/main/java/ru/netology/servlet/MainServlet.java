@@ -1,6 +1,7 @@
 package ru.netology.servlet;
 
 import ru.netology.controller.PostController;
+import ru.netology.exception.NotFoundException;
 import ru.netology.exception.UnsupportedMethodException;
 import ru.netology.handler.HandlerKeyPair;
 import ru.netology.repository.PostRepository;
@@ -89,7 +90,7 @@ public class MainServlet extends HttpServlet {
               .getSecond()
               .handle(req, res);
 
-    } catch (UnsupportedMethodException e) {
+    } catch (UnsupportedMethodException | NotFoundException e) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
     } catch (Exception e) {
       e.printStackTrace();

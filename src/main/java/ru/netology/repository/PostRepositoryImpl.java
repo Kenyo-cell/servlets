@@ -27,7 +27,7 @@ public class PostRepositoryImpl implements PostRepository {
     public Post save(Post post) throws NotFoundException {
         if (post.getId() == NEW_POST) {
             post.setId(idCounter.incrementAndGet());
-        } else if (posts.get(post.getId()) == null)
+        } else if (posts.containsKey(post.getId()))
             throw new NotFoundException("Post with id %d not found".formatted(post.getId()));
 
         posts.put(post.getId(), post);
@@ -35,7 +35,7 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     public boolean removeById(long id) throws NotFoundException {
-        if (posts.get(id) == null)
+        if (posts.containsKey(id))
             throw new NotFoundException("Post with id %d not found".formatted(id));
         posts.remove(id);
         return true;
